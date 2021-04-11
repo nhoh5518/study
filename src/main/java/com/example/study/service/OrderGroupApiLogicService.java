@@ -1,9 +1,12 @@
 package com.example.study.service;
 
 import com.example.study.model.entity.OrderGroup;
+import com.example.study.model.entity.Settlement;
 import com.example.study.model.network.Header;
 import com.example.study.model.network.request.OrderGroupApiRequest;
 import com.example.study.model.network.response.OrderGroupApiResponse;
+import com.example.study.model.network.response.SettlementApiResponse;
+import com.example.study.repository.SettlementRepository;
 import com.example.study.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -118,5 +122,23 @@ public class OrderGroupApiLogicService extends BaseService<OrderGroupApiRequest,
                 .build();
 
         return body;
+    }
+
+
+    public Header<SettlementApiResponse> settlement(Long id) {
+
+        Optional<OrderGroup> optional = baseRepository.findById(id);
+
+        Settlement settlement = Settlement.builder()
+                .userId(id)
+                .price(optional.get().getTotalPrice())
+                .build();
+
+        SettlementApiResponse settlementApiResponse = SettlementApiResponse.builder()
+                .userid(settlement.getUserId())
+                .price(settlement.getPrice())
+                .build();
+
+        return Header.OK(settlementApiResponse);
     }
 }
